@@ -17,10 +17,12 @@
        private _eventObject:IEventObject;
        private _callbackId:number
        private static instance: EventBus;
+       private _flagOnce:boolean
 
       constructor() {
           this._eventObject = {}
           this._callbackId = 0
+          this._flagOnce = false
       }
 
       // 实现单例模式
@@ -42,10 +44,18 @@
             this._eventObject[eventName] = {}
         }
         // 设置回调函数唯一id
-        let id: number= this._callbackId++
+        // callbackId使用后需要自增，供下一个回调函数使用
+           let id:string|number
+
+        if (this._flagOnce){
+            // callbackId使用后需要自增，供下一个回调函数使用
+            id = "d" + this._callbackId++
+        }else {
+            id= this._callbackId++
+        }
+
 
         // 存储订阅者的回调函数
-        // callbackId使用后需要自增，供下一个回调函数使用
         this._eventObject[eventName][id] = callback
 
         // 每一次订阅事件 也会生成取消订阅的函数
@@ -60,32 +70,14 @@
         };
         return {unSubscribe}
     }
+
       // 只订阅一次
       subscribeOnce(eventName:string,callback:Function):{unSubscribe:Function}{
-
-          // 先初始化事件，先判断是否有该事件
-          if (!this._eventObject[eventName]) {
-              // 使用对象存储，注销回调函数的时候提高删除的效率
-              this._eventObject[eventName] = {}
-          }
-          // 设置回调函数唯一id
-          let id: string= "d" + this._callbackId++
-
-          // 存储订阅者的回调函数
-          // callbackId使用后需要自增，供下一个回调函数使用
-          this._eventObject[eventName][id] = callback
-
-          // 每一次订阅事件 也会生成取消订阅的函数
-          const unSubscribe = () => {
-
-              delete this._eventObject[eventName][id];
-
-              // 如果这个事件没有订阅者了，也把整个事件对象清除
-              if (Object.keys(this._eventObject[eventName]).length === 0){
-                  delete this._eventObject[eventName]
-              }
-          };
-          return {unSubscribe}
+             // 修改只订阅一次的标记
+            this._flagOnce = true
+            const {unSubscribe} = this.subscribe(eventName,callback)
+            this._flagOnce = false
+             return {unSubscribe}
       }
 
     // 发布事件
