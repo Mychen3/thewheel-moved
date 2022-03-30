@@ -35,7 +35,7 @@ describe('hallo eventBus',()=>{
         eventBus.publish("eventTest1",66)
     });
 
-    it('只订阅一次',  ()=> {
+    it.skip('只订阅一次',  ()=> {
 
         const eventBus = new EventBus()
         // 订阅事件
@@ -52,6 +52,29 @@ describe('hallo eventBus',()=>{
         eventBus.publish("eventTest1",66)
 
         eventBus.publish("eventTest1",66)
+    });
+
+
+    it('清除某个事件或者所有事件',  ()=> {
+
+        const eventBus = new EventBus()
+        // 订阅事件
+        eventBus.subscribe('eventTest1',(param:number)=>{
+            console.log('我订阅1',param)
+        })
+        eventBus.subscribe('eventTest1',(param:number)=>{
+            console.log('我订阅2',param)
+        })
+        eventBus.subscribe('eventTest1',(param:number)=>{
+            console.log('我订阅3',param)
+        })
+
+        eventBus.publish("eventTest1",66)
+        eventBus.clear()
+
+        eventBus.publish("eventTest1",66)
+
+
     });
 
 })

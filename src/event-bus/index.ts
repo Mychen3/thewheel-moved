@@ -10,6 +10,7 @@
     publish<T extends any[]>(eventName: string, args: T): void;
     subscribe(eventName:string,callback:Function):{unSubscribe:Function};
     subscribeOnce(eventName:string,callback:Function):{unSubscribe:Function};
+    clear(eventName?:string):void
   }
 
   class EventBus implements IEventBus {
@@ -88,7 +89,6 @@
 
            // 然后去执行每一个回调函数
          for (let id in callBackObject){
-             console.log(id)
                callBackObject[id](...args)
 
              // 只订阅一次的回调函数需要删除
@@ -96,7 +96,18 @@
                   delete callBackObject[id]
               }
          }
-    }
+      }
+
+      // 清除某个事件或者所有事件
+      clear(eventName?:string){
+           // 如果没有传eventName默认全部清除
+           if (!eventName){
+               this._eventObject = {};
+               return
+           }
+           delete this._eventObject[eventName]
+
+      }
   }
 
   export default EventBus
