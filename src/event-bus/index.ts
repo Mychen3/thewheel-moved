@@ -16,10 +16,21 @@
   class EventBus implements IEventBus {
        private _eventObject:IEventObject;
        private _callbackId:number
+       private static instance: EventBus;
 
       constructor() {
           this._eventObject = {}
           this._callbackId = 0
+      }
+
+      // 实现单例模式
+      static getEventBus(){
+          // 判断是否已经new过1个实例
+            if (!EventBus.instance){
+                EventBus.instance = new EventBus()
+            }
+            // 如果这个唯一的实例已经存在，则直接返回
+            return EventBus.instance
       }
 
      // 订阅事件

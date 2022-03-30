@@ -1,4 +1,4 @@
-import {it, describe} from 'vitest'
+import {it, describe,expect} from 'vitest'
 import EventBus from '../src/event-bus/index'
 
 describe('hallo eventBus',()=>{
@@ -55,7 +55,7 @@ describe('hallo eventBus',()=>{
     });
 
 
-    it('清除某个事件或者所有事件',  ()=> {
+    it.skip('清除某个事件或者所有事件',  ()=> {
 
         const eventBus = new EventBus()
         // 订阅事件
@@ -73,6 +73,14 @@ describe('hallo eventBus',()=>{
         eventBus.clear()
 
         eventBus.publish("eventTest1",66)
+    });
+
+    it('实现单例模式', ()=> {
+
+        const eventBus = EventBus.getEventBus()
+        const eventBus1 = EventBus.getEventBus()
+
+        expect(Object.is(eventBus, eventBus1)).toBe(true)
 
 
     });
