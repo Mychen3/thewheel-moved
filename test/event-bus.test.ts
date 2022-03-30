@@ -6,52 +6,52 @@ describe('hallo eventBus',()=>{
     it.skip('simple eventBus ',  ()=> {
             const eventBus = new EventBus()
             // 订阅事件
-           eventBus.subscribe('eventTest1',(param:number)=>{
+           eventBus.on('eventTest1',(param:number)=>{
                console.log('打印出来了1',param)
            })
-           eventBus.subscribe('eventTest1',(param:number)=>{
+           eventBus.on('eventTest1',(param:number)=>{
                console.log('打印出来了2',param)
            })
-              eventBus.publish("eventTest1",66)
+              eventBus.emit("eventTest1",66)
     });
 
 
     it.skip('clear 取消订阅',  ()=> {
         const eventBus = new EventBus()
         // 订阅事件
-        eventBus.subscribe('eventTest1',(param:number)=>{
+        eventBus.on('eventTest1',(param:number)=>{
             console.log('我订阅1',param)
         })
-        let  subscriber2 = eventBus.subscribe('eventTest1',(param:number)=>{
+        let  onr2 = eventBus.on('eventTest1',(param:number)=>{
             console.log('我订阅2',param)
         })
-        eventBus.subscribe('eventTest1',(param:number)=>{
+        eventBus.on('eventTest1',(param:number)=>{
             console.log('我订阅3',param)
         })
 
         // 我这边就取消订阅了
-        subscriber2.unSubscribe()
+        onr2.unOn()
 
-        eventBus.publish("eventTest1",66)
+        eventBus.emit("eventTest1",66)
     });
 
     it.skip('只订阅一次',  ()=> {
 
         const eventBus = new EventBus()
         // 订阅事件
-        eventBus.subscribe('eventTest1',(param:number)=>{
+        eventBus.on('eventTest1',(param:number)=>{
             console.log('我订阅1',param)
         })
-        eventBus.subscribeOnce('eventTest1',(param:number)=>{
+        eventBus.Once('eventTest1',(param:number)=>{
             console.log('我只订阅一次',param)
         })
-        eventBus.subscribe('eventTest1',(param:number)=>{
+        eventBus.on('eventTest1',(param:number)=>{
             console.log('我订阅3',param)
         })
 
-        eventBus.publish("eventTest1",66)
+        eventBus.emit("eventTest1",66)
 
-        eventBus.publish("eventTest1",66)
+        eventBus.emit("eventTest1",66)
     });
 
 
@@ -59,20 +59,20 @@ describe('hallo eventBus',()=>{
 
         const eventBus = new EventBus()
         // 订阅事件
-        eventBus.subscribe('eventTest1',(param:number)=>{
+        eventBus.on('eventTest1',(param:number)=>{
             console.log('我订阅1',param)
         })
-        eventBus.subscribe('eventTest1',(param:number)=>{
+        eventBus.on('eventTest1',(param:number)=>{
             console.log('我订阅2',param)
         })
-        eventBus.subscribe('eventTest1',(param:number)=>{
+        eventBus.on('eventTest1',(param:number)=>{
             console.log('我订阅3',param)
         })
 
-        eventBus.publish("eventTest1",66)
+        eventBus.emit("eventTest1",66)
         eventBus.clear()
 
-        eventBus.publish("eventTest1",66)
+        eventBus.emit("eventTest1",66)
     });
 
     it('实现单例模式', ()=> {
