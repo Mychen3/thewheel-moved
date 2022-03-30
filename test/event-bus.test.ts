@@ -16,7 +16,7 @@ describe('hallo eventBus',()=>{
     });
 
 
-    it('clear 取消订阅',  ()=> {
+    it.skip('clear 取消订阅',  ()=> {
         const eventBus = new EventBus()
         // 订阅事件
         eventBus.subscribe('eventTest1',(param:number)=>{
@@ -31,6 +31,25 @@ describe('hallo eventBus',()=>{
 
         // 我这边就取消订阅了
         subscriber2.unSubscribe()
+
+        eventBus.publish("eventTest1",66)
+    });
+
+    it('只订阅一次',  ()=> {
+
+        const eventBus = new EventBus()
+        // 订阅事件
+        eventBus.subscribe('eventTest1',(param:number)=>{
+            console.log('我订阅1',param)
+        })
+        eventBus.subscribeOnce('eventTest1',(param:number)=>{
+            console.log('我只订阅一次',param)
+        })
+        eventBus.subscribe('eventTest1',(param:number)=>{
+            console.log('我订阅3',param)
+        })
+
+        eventBus.publish("eventTest1",66)
 
         eventBus.publish("eventTest1",66)
     });
