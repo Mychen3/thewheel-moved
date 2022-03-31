@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "dev": "vite",
     "test": "vitest",
     "coverage": "vitest run --coverage"
   },

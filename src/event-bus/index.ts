@@ -14,6 +14,8 @@ interface IEventBus {
     Once(eventName: string, callback: Function): { unOn: Function };
 
     clear(eventName?: string): void
+
+    ifEventObject(eventName: string):void
 }
 
 class EventBus implements IEventBus {
@@ -38,11 +40,14 @@ class EventBus implements IEventBus {
         return EventBus.instance
     }
 
+    ifEventObject(eventName: string){
+      return !!this._eventObject[eventName]
+    }
     // 订阅事件 on
     on(eventName: string, callback: Function): { unOn: Function } {
 
         // 先初始化事件，先判断是否有该事件
-        if (!this._eventObject[eventName]) {
+        if (!this.ifEventObject(eventName)) {
             // 使用对象存储，注销回调函数的时候提高删除的效率
             this._eventObject[eventName] = {}
         }

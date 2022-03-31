@@ -36,7 +36,7 @@ describe('hallo event-store',()=>{
             console.log('监听name',res)
         })
 
-        eventStore.setState("test", "lilei")
+        eventStore.offState("name")
         eventStore.setState("name", ["kobe", "james"])
         eventStore.setState("test", '我又改了')
 

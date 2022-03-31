@@ -15,7 +15,8 @@ interface IEventStore {
     observe(state:State):void;
     onState(stateKey:string,stateCallback:Function):void;
     dispatch<T extends any[]>(actionName:string,args:T):void;
-    setState(stateKey:string, stateValue:any):void
+    setState(stateKey:string, stateValue:any):void;
+    offState(stateKey:string):void
 }
 
 class EventStore implements IEventStore{
@@ -50,8 +51,10 @@ class EventStore implements IEventStore{
                set(target: State, key: string, newValue: any): any {
                    // 先判断是否是老值
                    if (Reflect.get(target,key) === newValue) return Reflect.get(target,key)
-                   // 每次设置值的时候都会触发set 发布事件 emit
-                   _this.eventBus.emit(key,newValue)
+
+                   //  判断事件对象里是否有该值，不然取消offState 是不能发布事件了
+                   //  每次设置值的时候都会触发set 发布事件 emit
+                   if (_this.eventBus.ifEventObject.call(_this.eventBus,key)) _this.eventBus.emit(key,newValue)
                     return  Reflect.set(target,key,newValue)
             }
         })
@@ -67,6 +70,9 @@ class EventStore implements IEventStore{
         const value = this.state[stateKey]
         // 修改this指向,把要获取的值通过回调参数传过去
         stateCallback.call(this.state, value)
+    }
+    offState(stateKey:string){
+        this.eventBus.clear(stateKey)
     }
     dispatch<T extends any[]>(actionName:string, ...args:T){
 
