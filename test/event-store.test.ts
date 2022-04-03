@@ -39,6 +39,7 @@ describe('hallo event-store',()=>{
         eventStore.offState("name")
         eventStore.setState("name", ["kobe", "james"])
         eventStore.setState("test", '我又改了')
+        eventStore.setState("name", '改不成功嘛')
 
     });
 
