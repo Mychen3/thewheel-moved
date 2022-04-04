@@ -12,6 +12,7 @@ interface IMyPromise extends IManFn {
 
     finally(onFinally:Function): MyPromise
 
+
 }
 
 const STATE_PENDING: string = 'pending'
@@ -22,7 +23,7 @@ const STATE_REJECTED: string = 'rejected'
 const exceptionHandling = (resolve: Function, reject: Function, handFn: Function, value: any): void => {
     try {
         const returnValue: any = handFn(value)
-        resolve(returnValue)
+       resolve(returnValue)
     } catch (e) {
         reject(e)
     }
@@ -98,7 +99,7 @@ export default class MyPromise implements IMyPromise {
         onFulfilled = onFulfilled || ((value:any)=>value)
 
         // .then的链式调用
-        return new MyPromise((resolve, reject) => {
+        let newPromise:MyPromise = new MyPromise((resolve, reject) => {
             // 判断如果状态已经发生改变了就立即去执行，为了避免在宏任务下.then的回调函数还没添加
             if (this._state === STATE_FULFILLED && onFulfilled) {
                 exceptionHandling(resolve, reject, onFulfilled, this._value)
@@ -110,13 +111,15 @@ export default class MyPromise implements IMyPromise {
                 // 成功的回调和失败的加入数组,
                 // 拿到上一个.then的返回值 继续resolve
                 if (onFulfilled) this._onFulfilleds.push(() => {
-                    exceptionHandling(resolve, reject, onFulfilled, this._value)
+                    if (newPromise._state === STATE_PENDING) exceptionHandling(resolve, reject, onFulfilled, this._value)
+
                 })
                 if (onRejected) this._onRejecteds.push(() => {
-                    exceptionHandling(resolve, reject, (onRejected as  Function), this._reason)
+                    if (newPromise._state === STATE_PENDING)  exceptionHandling(resolve, reject, (onRejected as  Function), this._reason)
                 })
             }
         })
+        return newPromise
 
     }
 
@@ -137,6 +140,28 @@ export default class MyPromise implements IMyPromise {
 
     static reject(reason:any){
         return new MyPromise((_resolve, reject)=>reject(reason))
+    }
+
+    static all(promiseArr:Array<MyPromise>){
+       return new MyPromise((resolve, reject)=>{
+               const values:Array<MyPromise> =[]
+                   // 依次执行里面的promise
+                promiseArr.forEach((promise)=>{
+                     promise.then((res:any)=>{
+                         values.push(res)
+                         // 判断执行完的promise长度的值是否跟传进来的数组相同 如果相同那就是执行完了
+                         if (values.length === promiseArr.length){
+                             resolve(values)
+                         }
+                     },(err:any)=>{
+                          reject(err)
+                     })
+                })
+        })
+    }
+
+    static allSettled(){
+
     }
 
 }

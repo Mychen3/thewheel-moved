@@ -23,20 +23,16 @@ describe('hallo Promise', () => {
 
     it.skip('then', function () {
           let promise:MyPromise = new MyPromise((resolve, _reject)=>{
-                resolve('牛逼')
+                resolve('实现then')
           })
            promise.then((res:any)=>{
                console.log('第一次调用',res)
                return '第二次调用'
            }).then((res:any)=>{
                console.log(res)
-                throw new Error('我报错了')
-           },(err:any)=>{
-               console.log(err,'err')
+               return '第三次调用'
            }).then((res:any)=>{
                console.log(res)
-           },(err:any)=>{
-               console.log(err,'err')
            })
 
     });
@@ -54,7 +50,7 @@ describe('hallo Promise', () => {
         })
 
     });
-    it('finally', function () {
+    it.skip('finally', function () {
         let promise:MyPromise = new MyPromise((resolve, _reject)=>{
             resolve('牛逼')
         })
@@ -67,6 +63,23 @@ describe('hallo Promise', () => {
             },0)
         }).finally(()=>{
             console.log('finally执行')
+        })
+
+    });
+    it.skip('all', function () {
+        let promise:MyPromise = new MyPromise((resolve, _reject)=>{
+            resolve('牛逼1')
+        })
+        let promise2:MyPromise = new MyPromise((resolve, _reject)=>{
+            resolve('牛逼2')
+        })
+        let promise3:MyPromise = new MyPromise((resolve, _reject)=>{
+            resolve('牛逼3')
+        })
+
+       let a= MyPromise.all([promise,promise2,promise3])
+        a.then((res:any)=>{
+            console.log(res)
         })
 
     });
