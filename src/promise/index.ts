@@ -8,7 +8,9 @@ interface IManFn {
 interface IMyPromise extends IManFn {
     then(onFulfilled: Function, onRejected?: Function): MyPromise
 
-    catch(onRejected: Function): any
+    catch(onRejected: Function): MyPromise
+
+    finally(onFinally:Function): MyPromise
 }
 
 const STATE_PENDING: string = 'pending'
@@ -91,6 +93,8 @@ export default class MyPromise implements IMyPromise {
         onRejected = onRejected || ((err:any) => {
             throw err
         })
+            // 其实这个就是实现finally
+        onFulfilled = onFulfilled || ((value:any)=>value)
 
         // .then的链式调用
         return new MyPromise((resolve, reject) => {
@@ -116,8 +120,15 @@ export default class MyPromise implements IMyPromise {
     }
 
     catch(onRejected: Function) {
+        return this.then((undefined as any), onRejected)
+    }
 
-        this.then((undefined as any), onRejected)
+    finally(onFinally:Function){
+        return this.then(()=>{
+            onFinally()
+        },()=>{
+            onFinally()
+        })
     }
 
 }
