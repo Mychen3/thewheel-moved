@@ -11,6 +11,7 @@ interface IMyPromise extends IManFn {
     catch(onRejected: Function): MyPromise
 
     finally(onFinally:Function): MyPromise
+
 }
 
 const STATE_PENDING: string = 'pending'
@@ -129,6 +130,13 @@ export default class MyPromise implements IMyPromise {
         },()=>{
             onFinally()
         })
+    }
+     static resolve(value:any){
+        return new MyPromise((resolve => resolve(value)))
+    }
+
+    static reject(reason:any){
+        return new MyPromise((_resolve, reject)=>reject(reason))
     }
 
 }

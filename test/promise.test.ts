@@ -22,7 +22,7 @@ describe('hallo Promise', () => {
     });
 
     it.skip('then', function () {
-          let promise:MyPromise = new MyPromise((resolve, reject)=>{
+          let promise:MyPromise = new MyPromise((resolve, _reject)=>{
                 resolve('牛逼')
           })
            promise.then((res:any)=>{
@@ -41,7 +41,7 @@ describe('hallo Promise', () => {
 
     });
     it.skip('catch', function () {
-        let promise:MyPromise = new MyPromise((resolve, reject)=>{
+        let promise:MyPromise = new MyPromise((_resolve, reject)=>{
             reject('牛逼')
         })
         promise.then((res:any)=>{
@@ -55,7 +55,7 @@ describe('hallo Promise', () => {
 
     });
     it('finally', function () {
-        let promise:MyPromise = new MyPromise((resolve, reject)=>{
+        let promise:MyPromise = new MyPromise((resolve, _reject)=>{
             resolve('牛逼')
         })
         promise.then((res:any)=>{
