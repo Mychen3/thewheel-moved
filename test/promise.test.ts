@@ -67,8 +67,8 @@ describe('hallo Promise', () => {
 
     });
     it.skip('all', function () {
-        let promise:MyPromise = new MyPromise((resolve, _reject)=>{
-            resolve('牛逼1')
+        let promise:MyPromise = new MyPromise((_resolve, _reject)=>{
+           throw new TypeError('出问题了')
         })
         let promise2:MyPromise = new MyPromise((resolve, _reject)=>{
             resolve('牛逼2')
@@ -80,8 +80,28 @@ describe('hallo Promise', () => {
        let a= MyPromise.all([promise,promise2,promise3])
         a.then((res:any)=>{
             console.log(res)
+        }).catch((err:TypeError)=>{
+            console.log(err)
+        })
+    });
+
+    it('allSettled', function () {
+        let promise:MyPromise = new MyPromise((_resolve, _reject)=>{
+            throw new TypeError('出问题了')
+        })
+        let promise2:MyPromise = new MyPromise((resolve, _reject)=>{
+            resolve('牛逼2')
+        })
+        let promise3:MyPromise = new MyPromise((resolve, _reject)=>{
+            resolve('牛逼3')
         })
 
+        let a= MyPromise.allSettled([promise,promise2,promise3])
+        a.then((res:any)=>{
+            console.log(res)
+        }).catch((err:TypeError)=>{
+            console.log(err)
+        })
     });
 
 

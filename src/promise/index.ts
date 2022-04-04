@@ -154,14 +154,32 @@ export default class MyPromise implements IMyPromise {
                              resolve(values)
                          }
                      },(err:any)=>{
+                         // 如果出现一个错误，这里就会捕获到直接让这个reject拒绝出去
                           reject(err)
                      })
                 })
         })
     }
 
-    static allSettled(){
+    static allSettled(promiseArr:Array<MyPromise>){
+        return new MyPromise((resolve, _reject)=>{
+            const values:Array<any> =[]
+              promiseArr.forEach((promise)=>{
+                     promise.then((res:any)=>{
+                          values.push({state:STATE_FULFILLED,value:res})
+                         if (values.length === promiseArr.length){
+                             resolve(values)
+                         }
+                     },(err:any)=>{
+                         // 这个方法不管promise会不会出现拒绝都会添加进去，所以只会出去resolve
+                         values.push({state:STATE_REJECTED,value:err})
+                         if (values.length === promiseArr.length){
+                             resolve(values)
+                         }
+                     })
+              })
 
+        })
     }
 
 }
