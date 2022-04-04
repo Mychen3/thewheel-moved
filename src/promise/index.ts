@@ -14,6 +14,15 @@ const STATE_FULFILLED: string = 'fulfilled'
 const STATE_REJECTED: string = 'rejected'
 
 
+const exceptionHandling = (resolve:Function,reject:Function,handFn:Function,value:any):void => {
+    try {
+        const returnValue: any = handFn(value)
+        resolve(returnValue)
+    } catch (e) {
+        reject(e)
+    }
+}
+
 export default class MyPromise implements IMyPromise {
     private _state: string;
     private _value: undefined | any;
@@ -37,7 +46,7 @@ export default class MyPromise implements IMyPromise {
         try {
             // 进来就直接掉用
             executor(this.resolve.bind(this), this.reject.bind(this))
-        }catch (e) {
+        } catch (e) {
             this.reject(e)
         }
     }
@@ -47,10 +56,11 @@ export default class MyPromise implements IMyPromise {
         if (this._state === STATE_PENDING) {
             // 微任务，如果不加微任务的话，.then传进来的函数是还没赋值的，导致this._onFulfilled是个undefined
             queueMicrotask(() => {
+                if (this._state !== STATE_PENDING) return
                 this._state = STATE_FULFILLED
                 // 只有当状态是在等待状态的时候
                 this._value = value
-                for(let onFulfilled of this._onFulfilleds){
+                for (let onFulfilled of this._onFulfilleds) {
                     onFulfilled(this._value)
                 }
             })
@@ -61,10 +71,11 @@ export default class MyPromise implements IMyPromise {
     reject<T extends any>(reason?: T) {
         if (this._state === STATE_PENDING) {
             queueMicrotask(() => {
+                if (this._state !== STATE_PENDING) return
                 this._state = STATE_REJECTED
                 // 只有当状态是在等待状态的时候
                 this._reason = reason
-                for(let onRejected of this._onRejecteds){
+                for (let onRejected of this._onRejecteds) {
                     onRejected(this._reason)
                 }
 
@@ -73,18 +84,26 @@ export default class MyPromise implements IMyPromise {
     }
 
     then(onFulfilled: Function, onRejected: Function) {
-        // 判断如果状态已经发生改变了就立即去执行，为了避免在宏任务下.then的回调函数还没添加
-         if (this._state === STATE_FULFILLED && onFulfilled){
-             onFulfilled(this._value)
-         }else if (this._state === STATE_REJECTED && onRejected){
-             onRejected(this._reason)
-         }
+        // .then的链式调用
+        return new MyPromise((resolve, reject) => {
+            // 判断如果状态已经发生改变了就立即去执行，为了避免在宏任务下.then的回调函数还没添加
+            if (this._state === STATE_FULFILLED && onFulfilled) {
+                exceptionHandling(resolve,reject,onFulfilled,this._value)
+            } else if (this._state === STATE_REJECTED && onRejected) {
+                exceptionHandling(resolve,reject,onRejected,this._reason)
+            }
 
+            if (this._state === STATE_PENDING) {
+                // 成功的回调和失败的加入数组,
+                // 拿到上一个.then的返回值 继续resolve
+                this._onFulfilleds.push(() => {
+                    exceptionHandling(resolve,reject,onFulfilled,this._value)
+                })
+                this._onRejecteds.push(() => {
+                    exceptionHandling(resolve,reject,onRejected,this._reason)
+                })
+            }
+        })
 
-         if (this._state === STATE_PENDING){
-             // 成功的回调和失败的加入数组
-             this._onFulfilleds.push(onFulfilled)
-             this._onRejecteds.push(onRejected)
-         }
     }
 }
