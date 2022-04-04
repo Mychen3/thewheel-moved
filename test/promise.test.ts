@@ -1,10 +1,10 @@
-import {it, describe} from 'vitest'
+import {it, describe,expect} from 'vitest'
 import MyPromise from "../src/promise";
 
 describe('hallo Promise', () => {
     it.skip('one', () => {
 
-        let promise:Promise<void> = new MyPromise((resolve)=>{
+        let promise:MyPromise = new MyPromise((resolve)=>{
             resolve('牛逼')
         })
         promise.then(res=>{
@@ -21,8 +21,8 @@ describe('hallo Promise', () => {
         },0)
     });
 
-    it('then', function () {
-          let promise:Promise<any> = new Promise((resolve, reject)=>{
+    it.skip('then', function () {
+          let promise:MyPromise = new MyPromise((resolve, reject)=>{
                 resolve('牛逼')
           })
            promise.then((res)=>{
@@ -38,6 +38,20 @@ describe('hallo Promise', () => {
            },err=>{
                console.log(err,'err')
            })
+
+    });
+    it('catch', function () {
+        let promise:MyPromise = new MyPromise((resolve, reject)=>{
+            reject('牛逼')
+        })
+        promise.then((res:any)=>{
+            console.log('第一次调用',res)
+            return '第二次调用'
+        }).catch(err=>{
+            setTimeout(()=>{
+                expect(err).toBe('牛逼')
+            },0)
+        })
 
     });
 
