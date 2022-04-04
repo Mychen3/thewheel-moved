@@ -4,13 +4,22 @@ import MyPromise from "../src/promise";
 describe('hallo Promise', () => {
     it('one', () => {
         let promise:Promise<void> = new MyPromise((resolve, reject)=>{
-            reject('牛逼')
+            resolve('牛逼')
         })
         promise.then(res=>{
             console.log(res)
-        },err=>{
-            console.log(err)
         })
+        promise.then(ss=>{
+            console.log(ss)
+        })
+
+        setTimeout(()=>{
+            promise.then(ss=>{
+                console.log(ss,'定时器下的')
+            })
+
+        },0)
+
     });
 
 
