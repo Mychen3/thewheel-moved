@@ -182,4 +182,36 @@ export default class MyPromise implements IMyPromise {
         })
     }
 
+    static race(promiseArr:Array<MyPromise>){
+       return new MyPromise((resolve, reject)=>{
+           promiseArr.forEach((promise)=>{
+               // 有结果立马返回
+                   promise.then((res:any)=>{
+                       resolve(res)
+                   },(err:any)=>{
+                       reject(err)
+                   })
+           })
+       })
+    }
+
+    static any(promiseArr:Array<MyPromise>){
+        return new MyPromise((resolve, reject)=>{
+            const values:Array<any> =[]
+            promiseArr.forEach((promise)=>{
+                // 有结果立马返回
+                promise.then((res:any)=>{
+                   resolve(res)
+                },(err:any)=>{
+                    // 如果全部错就把所有错误问题返回
+                    values.push(err)
+                    if (values.length === promiseArr.length){
+                        reject(new Error(values.toString()))
+                    }
+                })
+            })
+        })
+
+    }
+
 }
