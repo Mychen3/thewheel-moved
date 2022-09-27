@@ -22,7 +22,7 @@ describe("Stack", () => {
 
   test('decimalTobinary',()=>{
     expect(decimalTobinary(10)).toBe('1010')
- fun
+
   })
 
 
